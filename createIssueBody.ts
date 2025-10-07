@@ -22,7 +22,10 @@ Adding this rule will entail creating the following new source files:
 * \`packages/ts/src/rules/${name}.test.ts\`: tests for the rule
 * \`packages/site/src/content/docs/rules/ts/${name}.mdx\`: documentation of the rule
 
-The comparisons data in \`packages/comparisons/src/data.json\` will need to be updated to mention the rule is now \`implemented: true\`.
+Additionally, the following files will need to be edited:
+
+* \`packages/comparisons/src/data.json\`: Comparisons data in  will need to mention the rule is now \`implemented: true\`
+* \`packages/ts/src/plugin.ts\`: Included rules should have the new one inserted in alphabetical order
 
 ### Additional Info
 
