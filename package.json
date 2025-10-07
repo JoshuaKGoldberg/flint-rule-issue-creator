@@ -1,0 +1,11 @@
+{
+  "name": "flint-rule-issue-creator",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@flint.fyi/comparisons": "^0.0.2",
+    "eslint": "^9.37.0",
+    "execa": "^9.6.0",
+    "octokit-from-auth": "^0.3.2"
+  }
+}
