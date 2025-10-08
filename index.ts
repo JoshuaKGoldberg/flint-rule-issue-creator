@@ -11,6 +11,7 @@ for (const rule of rulesToImplement) {
   await octokit.rest.issues.create({
     body: createIssueBody(rule),
     labels: ["plugin: typescript", "status: accepting prs", "type: feature"],
+    milestone: 3,
     owner: "JoshuaKGoldberg",
     repo: "flint",
     title: `🚀 Feature: Implement ${rule.flint.name} rule (TypeScript)`,
