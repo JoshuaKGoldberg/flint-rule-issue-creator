@@ -4,8 +4,10 @@ import { takeAsync } from "./takeAsync.ts";
 import { iterateRulesToImplement } from "./iterateRulesToImplement.ts";
 import { createIssueBody } from "./createIssueBody.ts";
 
+const issuesToCreate = 10;
+
 const octokit = await octokitFromAuth();
-const rulesToImplement = await takeAsync(iterateRulesToImplement(octokit), 1);
+const rulesToImplement = await takeAsync(iterateRulesToImplement(octokit), issuesToCreate);
 
 for (const rule of rulesToImplement) {
   await octokit.rest.issues.create({
