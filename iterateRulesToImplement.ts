@@ -4,10 +4,14 @@ import { getESLintRulesBySize } from "./getESLintRulesBySize.ts";
 import type { Strategy } from "./types.ts";
 import { getESLintRulesInPlugin } from "./getESLintRulesInPlugin.ts";
 import { styleText } from "node:util";
+import type { Comparison } from "@flint.fyi/comparisons";
+import { pluginNames } from "./strings.ts";
 
-async function doesRuleHaveIssue(flintRuleName: string, octokit: Octokit) {
+async function doesRuleHaveIssue(comparison: Comparison, octokit: Octokit) {
   const result = await octokit.request("GET /search/issues", {
-    q: `in:title "Feature: Implement ${flintRuleName} rule (TypeScript)"`,
+    q: `in:title "Feature: Implement ${comparison.flint.name} rule (${
+      pluginNames[comparison.flint.plugin]
+    })"`,
     type: "Issues",
     sort: "created",
     order: "desc",
@@ -31,7 +35,7 @@ export async function* iterateRulesToImplement(
         `Checking for existing issue on ${candidate.flint.name}...`
       )
     );
-    if (await doesRuleHaveIssue(candidate.flint.name, octokit)) {
+    if (await doesRuleHaveIssue(candidate, octokit)) {
       console.log(
         styleText("gray", `${candidate.flint.name} issue already exists.`)
       );

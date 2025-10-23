@@ -3,9 +3,10 @@ import {
   type Linter,
   linterNames,
 } from "@flint.fyi/comparisons";
+import { pluginNames } from "./strings.ts";
 
 export function createIssueBody(comparison: Comparison) {
-  const { name } = comparison.flint;
+  const { name, plugin } = comparison.flint;
 
   return `### Feature Request Checklist
 
@@ -14,18 +15,20 @@ export function createIssueBody(comparison: Comparison) {
 
 ### Overview
 
-Per [flint.fyi/rules](https://www.flint.fyi/rules), Flint is intended to have a \`${name}\` rule in the TypeScript plugin (\`ts\`). It'll behave roughly equivalently to the existing implementations in other linters to start. This issue tracks adding that rule.
+Per [flint.fyi/rules](https://www.flint.fyi/rules), Flint is intended to have a \`${name}\` rule in the ${
+    pluginNames[plugin]
+  } plugin (\`${plugin}\`). It'll behave roughly equivalently to the existing implementations in other linters to start. This issue tracks adding that rule.
 
 Adding this rule will entail creating the following new source files:
 
-* \`packages/ts/src/rules/${name}.ts\`: implementation of the rule itself
-* \`packages/ts/src/rules/${name}.test.ts\`: tests for the rule
-* \`packages/site/src/content/docs/rules/ts/${name}.mdx\`: documentation of the rule
+* \`packages/${plugin}/src/rules/${name}.ts\`: implementation of the rule itself
+* \`packages/${plugin}/src/rules/${name}.test.ts\`: tests for the rule
+* \`packages/site/src/content/docs/rules/${plugin}/${name}.mdx\`: documentation of the rule
 
 Additionally, the following files will need to be edited:
 
 * \`packages/comparisons/src/data.json\`: Comparisons data in  will need to mention the rule is now \`implemented: true\`
-* \`packages/ts/src/plugin.ts\`: Included rules should have the new one inserted in alphabetical order
+* \`packages/${plugin}/src/plugin.ts\`: Included rules should have the new one inserted in alphabetical order
 
 ### Additional Info
 
