@@ -1,19 +1,9 @@
-import { comparisons } from "@flint.fyi/comparisons";
 import type { Octokit } from "octokit";
 
 import { getESLintRulesBySize } from "./getESLintRulesBySize.ts";
-
-const toBeImplemented = new Map(
-  comparisons
-    .filter(
-      (comparison) =>
-        comparison.flint.plugin === "ts" &&
-        comparison.flint.preset !== "Not implementing" &&
-        !comparison.flint.implemented &&
-        comparison.eslint?.length === 1
-    )
-    .map((comparison) => [comparison.eslint![0].name, comparison])
-);
+import type { Strategy } from "./types.ts";
+import { getESLintRulesInPlugin } from "./getESLintRulesInPlugin.ts";
+import { styleText } from "node:util";
 
 async function doesRuleHaveIssue(flintRuleName: string, octokit: Octokit) {
   const result = await octokit.request("GET /search/issues", {
@@ -26,17 +16,28 @@ async function doesRuleHaveIssue(flintRuleName: string, octokit: Octokit) {
   return !!result.data.items.length;
 }
 
-export async function* iterateRulesToImplement(octokit: Octokit) {
-  const eslintRulesBySize = await getESLintRulesBySize();
+export async function* iterateRulesToImplement(
+  octokit: Octokit,
+  strategy: Strategy
+) {
+  const candidates = await (strategy.kind === "by-size"
+    ? getESLintRulesBySize()
+    : getESLintRulesInPlugin(strategy));
 
-  for (const [eslintName] of eslintRulesBySize) {
-    const comparison = toBeImplemented.get(eslintName);
-
-    if (
-      comparison &&
-      !(await doesRuleHaveIssue(comparison.flint.name, octokit))
-    ) {
-      yield comparison;
+  for (const candidate of candidates) {
+    console.log(
+      styleText(
+        "gray",
+        `Checking for existing issue on ${candidate.flint.name}...`
+      )
+    );
+    if (await doesRuleHaveIssue(candidate.flint.name, octokit)) {
+      console.log(
+        styleText("gray", `${candidate.flint.name} issue already exists.`)
+      );
+    } else {
+      console.log(styleText("gray", `Yielding ${candidate.flint.name}.`));
+      yield candidate;
     }
   }
 }

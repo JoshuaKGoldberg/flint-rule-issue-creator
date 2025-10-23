@@ -7,5 +7,8 @@
     "eslint": "^9.38.0",
     "execa": "^9.6.0",
     "octokit-from-auth": "^0.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1"
   }
 }
