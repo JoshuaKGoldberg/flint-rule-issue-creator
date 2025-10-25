@@ -13,7 +13,7 @@ const issuesToCreate = 10;
 
 const strategy = {
   kind: "in-plugin",
-  plugin: "yml",
+  plugin: "md",
 } satisfies Strategy;
 
 const octokit = await octokitFromAuth();
