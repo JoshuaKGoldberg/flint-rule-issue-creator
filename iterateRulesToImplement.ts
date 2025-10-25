@@ -6,9 +6,15 @@ import { getESLintRulesInPlugin } from "./getESLintRulesInPlugin.ts";
 import { styleText } from "node:util";
 import type { Comparison } from "@flint.fyi/comparisons";
 import { pluginNames } from "./strings.ts";
+import { readCached, writeCached } from "./cache.ts";
 
 async function doesRuleHaveIssue(comparison: Comparison, octokit: Octokit) {
-  const result = await octokit.request("GET /search/issues", {
+  const cached = await readCached(comparison.flint.name);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  const response = await octokit.request("GET /search/issues", {
     q: `in:title "Feature: Implement ${comparison.flint.name} rule (${
       pluginNames[comparison.flint.plugin]
     })"`,
@@ -17,7 +23,11 @@ async function doesRuleHaveIssue(comparison: Comparison, octokit: Octokit) {
     order: "desc",
   });
 
-  return !!result.data.items.length;
+  const result = !!response.data.items.length;
+
+  await writeCached(comparison.flint.name, result);
+
+  return result;
 }
 
 export async function* iterateRulesToImplement(
@@ -37,10 +47,10 @@ export async function* iterateRulesToImplement(
     );
     if (await doesRuleHaveIssue(candidate, octokit)) {
       console.log(
-        styleText("gray", `${candidate.flint.name} issue already exists.`)
+        styleText("gray", `\t${candidate.flint.name} issue already exists.`)
       );
     } else {
-      console.log(styleText("gray", `Yielding ${candidate.flint.name}.`));
+      console.log(styleText("gray", `\tYielding ${candidate.flint.name}.`));
       yield candidate;
     }
   }

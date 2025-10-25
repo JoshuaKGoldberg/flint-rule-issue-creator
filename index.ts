@@ -6,14 +6,15 @@ import { createIssueBody } from "./createIssueBody.ts";
 import type { Strategy } from "./types.ts";
 import { styleText } from "node:util";
 import { pluginNames } from "./strings.ts";
+import { writeCached } from "./cache.ts";
 
 const goLive = !!process.env.GO_LIVE;
 
-const issuesToCreate = 10;
+const issuesToCreate = 15;
 
 const strategy = {
   kind: "in-plugin",
-  plugin: "md",
+  plugin: "ts",
 } satisfies Strategy;
 
 const octokit = await octokitFromAuth();
@@ -40,7 +41,8 @@ for (const rule of rulesToImplement) {
         pluginNames[rule.flint.plugin]
       })`,
     });
-    console.log(styleText("gray", "Created."));
+    await writeCached(rule.flint.name, true);
+    console.log(styleText("gray", "\tCreated."));
   } else {
     console.log(rule);
   }
