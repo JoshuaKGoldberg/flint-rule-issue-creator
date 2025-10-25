@@ -4,6 +4,8 @@ import type { InPluginStrategy } from "./types.ts";
 
 export async function getESLintRulesInPlugin(strategy: InPluginStrategy) {
   return comparisons.filter(
-    (comparison) => comparison.flint.plugin === strategy.plugin
+    (comparison) =>
+      comparison.flint.plugin === strategy.plugin &&
+      comparison.flint.preset !== "Not implementing"
   );
 }
